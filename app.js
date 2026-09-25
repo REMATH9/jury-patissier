@@ -65,7 +65,7 @@ function renderHome(){
         <div>
           <div class="eyebrow">OBJECTIF · JURY CENTRAL</div>
           <h2>Maîtriser les notions, pas les réciter.</h2>
-          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V5</span></p>
+          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V6</span></p>
           <div class="actions">
             <button class="btn primary" id="quick">Continuer la révision</button>
             <button class="btn ghost" id="weak">Mes erreurs (${s.wrong})</button>

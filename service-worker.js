@@ -1,11 +1,11 @@
-const CACHE='jury-patisserie-v5';
+const CACHE='jury-patisserie-v6';
 const ASSETS=[
   './',
   './index.html',
-  './style.css?v=5',
-  './app.js?v=5',
-  './questions.js?v=5',
-  './manifest.json?v=5',
+  './style.css?v=6',
+  './app.js?v=6',
+  './questions.js?v=6',
+  './manifest.json?v=6',
   './icon.svg',
   './icon-192.png',
   './icon-512.png'

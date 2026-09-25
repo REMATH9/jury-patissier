@@ -79,3 +79,14 @@ Après publication :
 2. ouvrir le site dans le navigateur ;
 3. vérifier que `V5` apparaît sur l'accueil ;
 4. fermer puis rouvrir l'app installée sur l'écran d'accueil si nécessaire.
+
+
+## V6 – contenu uniquement
+- suppression complète du thème **Examen & méthode**
+- suppression des valeurs purement administratives du Jury :
+  score minimum, frais d'inscription, délai avant nouvelle tentative,
+  convocation, résultats, code d'examen et accès par expérience
+- conservation des valeurs réellement utiles au métier :
+  températures, temps de conservation, HACCP, chocolat, crème anglaise,
+  hydratation, froid/chaud, etc.
+- **197 questions** restantes, centrées sur la matière à connaître
