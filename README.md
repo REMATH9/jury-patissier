@@ -31,3 +31,51 @@ Ouvrir le site dans Chrome → menu ⋮ → **Ajouter à l’écran d’accueil*
 
 ## Modifier les questions
 Toutes les questions sont dans `questions.js`.
+
+## V2 – Mode Fiches
+- nouvel onglet **Fiches**
+- question seule au recto
+- toucher la carte pour afficher réponse + explication
+- boutons **Je sais** / **À revoir**
+- progression des fiches sauvegardée localement
+- interface optimisée smartphone
+
+Pour mettre à jour une V1 déjà publiée, remplace tous les fichiers par ceux de ce ZIP.
+
+
+## V3 – Thème « Valeurs clés 🔢 »
+La base contient maintenant **214 questions** au total.
+
+Le nouveau thème regroupe les chiffres à mémoriser :
+- Jury central : score, délais, frais, code examen
+- AFSCA : froid, chaud, surgelés, friture, durées de conservation
+- pâtisserie : crème anglaise et tempérage du chocolat
+- boulangerie : hydratation et quelques repères de température
+
+Les explications distinguent les **valeurs réglementaires** des **repères techniques**.
+
+### Sources principales vérifiées en septembre 2026
+- SPW Économie – Jury central boulanger-pâtissier et inscription au Jury central
+- AFSCA – températures de conservation et Guide d’autocontrôle boulangerie-pâtisserie G-026
+- AFSCA – circulaire sur les dérogations de température (viennoiseries à crème pâtissière, tarte au riz)
+- École Valrhona – tempérage du chocolat et crème anglaise
+- Lesaffre France – gestion de la fermentation par fortes chaleurs
+
+
+## V4 – QCM difficile
+- bonne réponse A/B/C/D mélangée à chaque affichage
+- mode **Difficile** activé par défaut
+- mode **Classique** toujours disponible
+- 154 questions techniques disposent de distracteurs experts réécrits manuellement
+- les questions « Valeurs clés » utilisent leurs valeurs proches puis sont mélangées
+- l’onglet Fiches reste inchangé : aucune proposition visible avant retournement
+
+## V5 – correction GitHub Pages / cache
+Cette version force le rechargement de `style.css`, `app.js` et `questions.js`
+grâce à un numéro de version dans les URLs et à un service worker `network-first`.
+
+Après publication :
+1. attendre 1–2 minutes ;
+2. ouvrir le site dans le navigateur ;
+3. vérifier que `V5` apparaît sur l'accueil ;
+4. fermer puis rouvrir l'app installée sur l'écran d'accueil si nécessaire.

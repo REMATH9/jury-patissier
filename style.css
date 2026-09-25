@@ -177,3 +177,132 @@ p{line-height:1.55}
   .difficulty-switch{width:100%}
   .difficulty-btn{flex:1}
 }
+
+
+/* ---------- V5 : flashcards premium + mobile robustness ---------- */
+.flashcard{
+  appearance:none;
+  -webkit-appearance:none;
+  display:block;
+  border:none!important;
+  outline:none;
+  padding:0!important;
+  width:100%;
+  max-width:680px;
+  margin:0 auto;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+.flashcard-inner{
+  display:block;
+  position:relative;
+  width:100%;
+  height:100%;
+  min-height:inherit;
+}
+
+.flash-face{
+  box-sizing:border-box;
+  width:100%;
+  height:100%;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:28px;
+}
+
+.flash-front{
+  background:
+    radial-gradient(circle at 90% 10%, color-mix(in srgb,var(--accent) 9%,transparent), transparent 32%),
+    var(--panel);
+}
+
+.flash-back{
+  background:
+    radial-gradient(circle at 10% 90%, color-mix(in srgb,var(--accent2) 10%,transparent), transparent 34%),
+    var(--panel);
+}
+
+.flash-question{
+  max-width:560px;
+  margin:0 auto;
+}
+
+.flash-answer{
+  max-width:560px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.flash-explanation{
+  max-width:520px;
+  padding-top:16px;
+  margin-top:2px;
+  border-top:1px solid var(--line);
+}
+
+.reveal-btn{
+  appearance:none;
+  -webkit-appearance:none;
+  display:block;
+  max-width:680px;
+  margin:12px auto 0;
+  box-shadow:none;
+}
+
+.flash-actions{
+  max-width:680px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.flash-grade{
+  appearance:none;
+  -webkit-appearance:none;
+  font-family:inherit;
+}
+
+@media(max-width:560px){
+  .app-shell{padding-left:12px;padding-right:12px}
+  .flashcard{
+    height:60vh;
+    min-height:410px;
+    max-height:610px;
+  }
+  .flash-face{
+    border-radius:24px;
+    padding:56px 20px 56px;
+  }
+  .flash-question{
+    font-size:clamp(1.35rem,6.4vw,1.85rem);
+    line-height:1.28;
+  }
+  .flash-answer{
+    font-size:clamp(1.25rem,5.8vw,1.7rem);
+    line-height:1.3;
+  }
+  .flash-explanation{
+    font-size:.98rem;
+    line-height:1.55;
+  }
+  .tap-hint{
+    font-size:.74rem;
+    bottom:16px;
+  }
+  .flash-grade,.reveal-btn{
+    min-height:56px;
+    font-size:.98rem;
+  }
+}
+
+.version-badge{
+  display:inline-block;
+  margin-left:5px;
+  padding:2px 6px;
+  border-radius:999px;
+  font-size:.65rem;
+  font-weight:900;
+  background:var(--accent2);
+  color:white;
+  vertical-align:middle;
+}
