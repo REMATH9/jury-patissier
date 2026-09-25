@@ -2,6 +2,7 @@
 const $ = s => document.querySelector(s);
 const app = $("#app");
 const Q = window.QUESTIONS || [];
+const VOCAB = window.VOCABULARY || [];
 const categories = [...new Set(Q.map(q=>q.category))];
 
 const defaultState = {
@@ -50,6 +51,7 @@ function nav(view){
   if(view==="home") renderHome();
   if(view==="learn") renderLearn();
   if(view==="cards") renderCardsHome();
+  if(view==="vocab") renderVocabulary();
   if(view==="review") startReview();
   if(view==="exam") renderExamStart();
   window.scrollTo({top:0,behavior:"smooth"});
@@ -65,7 +67,7 @@ function renderHome(){
         <div>
           <div class="eyebrow">OBJECTIF · JURY CENTRAL</div>
           <h2>Maîtriser les notions, pas les réciter.</h2>
-          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V6</span></p>
+          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V7</span></p>
           <div class="actions">
             <button class="btn primary" id="quick">Continuer la révision</button>
             <button class="btn ghost" id="weak">Mes erreurs (${s.wrong})</button>
@@ -406,6 +408,108 @@ function renderCardsResult(){
     const weak=Q.filter(q=>state.flashReview && state.flashReview[q.id]);
     weak.length ? startCards(shuffle(weak),"Fiches à revoir") : renderCardsHome();
   };
+}
+
+
+function normalizeSearch(s){
+  return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function renderVocabulary(activeCategory="Tous", query=""){
+  const cats=["Tous", ...new Set(VOCAB.map(v=>v.category))];
+  const qn=normalizeSearch(query);
+
+  const filtered=VOCAB
+    .filter(v=>activeCategory==="Tous" || v.category===activeCategory)
+    .filter(v=>{
+      if(!qn)return true;
+      return normalizeSearch(v.term+" "+v.definition+" "+v.category).includes(qn);
+    })
+    .sort((a,b)=>a.term.localeCompare(b.term,"fr"));
+
+  app.innerHTML=`
+    <section class="vocab-hero">
+      <div class="eyebrow">LEXIQUE PROFESSIONNEL</div>
+      <h2>Le vocabulaire boulangerie-pâtisserie</h2>
+      <p class="muted">${VOCAB.length} termes expliqués simplement. Tape un mot ou parcours les catégories.</p>
+
+      <div class="vocab-search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="vocabSearch" class="vocab-search" type="search"
+          placeholder="Rechercher : pétrin, foisonner, pointage…"
+          value="${query.replace(/"/g,'&quot;')}" autocomplete="off">
+      </div>
+    </section>
+
+    <div class="vocab-filter-row">
+      ${cats.map(c=>`<button class="vocab-chip ${c===activeCategory?"active":""}" data-cat="${encodeURIComponent(c)}">${c}</button>`).join("")}
+    </div>
+
+    <div class="vocab-count">${filtered.length} terme${filtered.length!==1?"s":""}</div>
+
+    <div class="vocab-list">
+      ${filtered.length ? filtered.map((v,i)=>`
+        <button class="vocab-item" data-index="${VOCAB.indexOf(v)}">
+          <div class="vocab-main">
+            <strong>${v.term}</strong>
+            <span class="vocab-cat">${v.category}</span>
+          </div>
+          <span class="vocab-arrow">›</span>
+        </button>
+      `).join("") : `<div class="empty"><h2>Aucun terme trouvé</h2><p>Essaie avec un autre mot.</p></div>`}
+    </div>
+  `;
+
+  const input=$("#vocabSearch");
+  let timer;
+  input.oninput=()=>{
+    clearTimeout(timer);
+    const value=input.value;
+    timer=setTimeout(()=>renderVocabulary(activeCategory,value),120);
+  };
+
+  document.querySelectorAll(".vocab-chip").forEach(b=>b.onclick=()=>{
+    renderVocabulary(decodeURIComponent(b.dataset.cat), query);
+  });
+
+  document.querySelectorAll(".vocab-item").forEach(b=>b.onclick=()=>{
+    openVocab(+b.dataset.index, activeCategory, query);
+  });
+}
+
+function openVocab(index, activeCategory="Tous", query=""){
+  const v=VOCAB[index];
+  if(!v)return renderVocabulary(activeCategory,query);
+
+  app.innerHTML=`
+    <div class="vocab-detail-top">
+      <button class="back-link" id="backVocab">‹ Vocabulaire</button>
+      <span class="vocab-cat detail-cat">${v.category}</span>
+    </div>
+
+    <article class="vocab-detail-card">
+      <div class="vocab-letter">${v.term.charAt(0).toUpperCase()}</div>
+      <div class="eyebrow">TERME</div>
+      <h2 class="vocab-term-title">${v.term}</h2>
+      <div class="vocab-definition">${v.definition}</div>
+    </article>
+
+    <div class="vocab-nearby">
+      <div class="eyebrow">TERMES PROCHES</div>
+      <div class="vocab-nearby-grid">
+        ${VOCAB
+          .filter(x=>x.category===v.category && x.term!==v.term)
+          .slice(0,6)
+          .map(x=>`<button class="vocab-nearby-btn" data-index="${VOCAB.indexOf(x)}">${x.term}</button>`)
+          .join("")}
+      </div>
+    </div>
+  `;
+
+  $("#backVocab").onclick=()=>renderVocabulary(activeCategory,query);
+  document.querySelectorAll(".vocab-nearby-btn").forEach(b=>b.onclick=()=>{
+    openVocab(+b.dataset.index, activeCategory, query);
+  });
 }
 
 function renderExamStart(){

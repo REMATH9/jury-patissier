@@ -1,11 +1,12 @@
-const CACHE='jury-patisserie-v6';
+const CACHE='jury-patisserie-v7';
 const ASSETS=[
   './',
   './index.html',
-  './style.css?v=6',
-  './app.js?v=6',
+  './style.css?v=7',
+  './app.js?v=7',
   './questions.js?v=6',
-  './manifest.json?v=6',
+  './vocabulary.js?v=7',
+  './manifest.json?v=7',
   './icon.svg',
   './icon-192.png',
   './icon-512.png'
@@ -25,26 +26,16 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const req = event.request;
-
-  // Always try network first for HTML/CSS/JS so GitHub updates appear quickly.
-  if (req.mode === 'navigate' ||
-      req.url.includes('style.css') ||
-      req.url.includes('app.js') ||
-      req.url.includes('questions.js')) {
+  const req=event.request;
+  if(req.mode==='navigate' || /\.(?:css|js)(?:\?|$)/.test(req.url)){
     event.respondWith(
-      fetch(req)
-        .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(cache => cache.put(req, copy));
-          return res;
-        })
-        .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+      fetch(req).then(res=>{
+        const copy=res.clone();
+        caches.open(CACHE).then(cache=>cache.put(req,copy));
+        return res;
+      }).catch(()=>caches.match(req).then(r=>r||caches.match('./index.html')))
     );
     return;
   }
-
-  event.respondWith(
-    caches.match(req).then(cached => cached || fetch(req))
-  );
+  event.respondWith(caches.match(req).then(r=>r||fetch(req)));
 });

@@ -90,3 +90,13 @@ Après publication :
   températures, temps de conservation, HACCP, chocolat, crème anglaise,
   hydratation, froid/chaud, etc.
 - **197 questions** restantes, centrées sur la matière à connaître
+
+
+## V7 – Onglet Vocabulaire
+- nouvel onglet **Vocab.**
+- **148 termes professionnels** de boulangerie-pâtisserie
+- définitions courtes et simples
+- recherche instantanée
+- filtres par catégorie : boulangerie, pâtisserie, viennoiserie, chocolat, matériel, hygiène, production
+- fiche détaillée optimisée smartphone
+- fonctionnement hors ligne
