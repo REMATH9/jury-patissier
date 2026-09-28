@@ -3,6 +3,7 @@ const $ = s => document.querySelector(s);
 const app = $("#app");
 const Q = window.QUESTIONS || [];
 const VOCAB = window.VOCABULARY || [];
+const BASES = window.BASES || [];
 const categories = [...new Set(Q.map(q=>q.category))];
 
 const defaultState = {
@@ -52,12 +53,130 @@ function nav(view){
   if(view==="learn") renderLearn();
   if(view==="cards") renderCardsHome();
   if(view==="vocab") renderVocabulary();
+  if(view==="bases") renderBases();
   if(view==="review") startReview();
-  if(view==="exam") renderExamStart();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>nav(b.dataset.view));
 $("#themeBtn").onclick=()=>setTheme(state.theme==="dark"?"light":"dark");
+
+
+function renderBases(activeCategory="Toutes", query=""){
+  const cats=["Toutes","Pâtes","Crèmes","Biscuits"];
+  const qn=normalizeSearch(query);
+  const filtered=BASES
+    .filter(b=>activeCategory==="Toutes" || b.category===activeCategory)
+    .filter(b=>{
+      if(!qn) return true;
+      return normalizeSearch(
+        b.name+" "+b.category+" "+b.composition+" "+b.method+" "+b.uses+" "+b.key
+      ).includes(qn);
+    });
+
+  app.innerHTML=`
+    <section class="bases-hero">
+      <div class="eyebrow">FONDAMENTAUX DE PÂTISSERIE</div>
+      <h2>Pâtes, crèmes & biscuits de base</h2>
+      <p class="muted">${BASES.length} bases à connaître. Composition, méthode, utilisations et point technique essentiel.</p>
+      <div class="vocab-search-wrap">
+        <span class="search-icon">⌕</span>
+        <input id="basesSearch" class="vocab-search" type="search"
+          placeholder="Rechercher : choux, anglaise, génoise…"
+          value="${query.replace(/"/g,'&quot;')}" autocomplete="off">
+      </div>
+    </section>
+
+    <div class="vocab-filter-row bases-filters">
+      ${cats.map(c=>`<button class="vocab-chip ${c===activeCategory?"active":""}" data-cat="${encodeURIComponent(c)}">${c}</button>`).join("")}
+    </div>
+
+    <div class="vocab-count">${filtered.length} base${filtered.length!==1?"s":""}</div>
+
+    <div class="bases-list">
+      ${filtered.length ? filtered.map((b,i)=>`
+        <button class="base-item" data-index="${BASES.indexOf(b)}">
+          <div>
+            <div class="base-item-top">
+              <strong>${b.name}</strong>
+              <span class="vocab-cat">${b.category}</span>
+            </div>
+            <p>${b.composition}</p>
+          </div>
+          <span class="vocab-arrow">›</span>
+        </button>
+      `).join("") : `<div class="empty"><h2>Aucune base trouvée</h2><p>Essaie avec un autre terme.</p></div>`}
+    </div>
+  `;
+
+  const input=$("#basesSearch");
+  let timer;
+  input.oninput=()=>{
+    clearTimeout(timer);
+    const value=input.value;
+    timer=setTimeout(()=>renderBases(activeCategory,value),120);
+  };
+
+  document.querySelectorAll(".bases-filters .vocab-chip").forEach(b=>b.onclick=()=>{
+    renderBases(decodeURIComponent(b.dataset.cat), query);
+  });
+
+  document.querySelectorAll(".base-item").forEach(b=>b.onclick=()=>{
+    openBase(+b.dataset.index, activeCategory, query);
+  });
+}
+
+function openBase(index, activeCategory="Toutes", query=""){
+  const b=BASES[index];
+  if(!b) return renderBases(activeCategory,query);
+
+  app.innerHTML=`
+    <div class="vocab-detail-top">
+      <button class="back-link" id="backBases">‹ Bases</button>
+      <span class="vocab-cat detail-cat">${b.category}</span>
+    </div>
+
+    <article class="base-detail-card">
+      <div class="base-detail-kicker">${b.category.toUpperCase()}</div>
+      <h2 class="base-detail-title">${b.name}</h2>
+
+      <div class="base-block">
+        <div class="base-label">COMPOSITION</div>
+        <div>${b.composition}</div>
+      </div>
+
+      <div class="base-block">
+        <div class="base-label">MÉTHODE</div>
+        <div>${b.method}</div>
+      </div>
+
+      <div class="base-block">
+        <div class="base-label">UTILISATIONS</div>
+        <div>${b.uses}</div>
+      </div>
+
+      <div class="base-key">
+        <span>À RETENIR</span>
+        <strong>${b.key}</strong>
+      </div>
+    </article>
+
+    <div class="vocab-nearby">
+      <div class="eyebrow">AUTRES BASES DE LA CATÉGORIE</div>
+      <div class="vocab-nearby-grid">
+        ${BASES
+          .filter(x=>x.category===b.category && x.name!==b.name)
+          .slice(0,8)
+          .map(x=>`<button class="vocab-nearby-btn" data-index="${BASES.indexOf(x)}">${x.name}</button>`)
+          .join("")}
+      </div>
+    </div>
+  `;
+
+  $("#backBases").onclick=()=>renderBases(activeCategory,query);
+  document.querySelectorAll(".vocab-nearby-btn").forEach(btn=>btn.onclick=()=>{
+    openBase(+btn.dataset.index,activeCategory,query);
+  });
+}
 
 function renderHome(){
   const s=stats();
@@ -67,7 +186,7 @@ function renderHome(){
         <div>
           <div class="eyebrow">OBJECTIF · JURY CENTRAL</div>
           <h2>Maîtriser les notions, pas les réciter.</h2>
-          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V7</span></p>
+          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V8</span></p>
           <div class="actions">
             <button class="btn primary" id="quick">Continuer la révision</button>
             <button class="btn ghost" id="weak">Mes erreurs (${s.wrong})</button>
@@ -512,25 +631,6 @@ function openVocab(index, activeCategory="Tous", query=""){
   });
 }
 
-function renderExamStart(){
-  app.innerHTML=`
-    <section class="hero">
-      <div class="eyebrow">EXAMEN BLANC</div>
-      <h2>30 questions · tous les thèmes</h2>
-      <p class="muted">En mode difficile, les mauvaises réponses sont volontairement proches de la bonne et A/B/C/D sont mélangés à chaque passage.</p>
-      <div class="difficulty-switch exam-switch">
-        <button class="difficulty-btn ${quizDifficulty==="classic"?"active":""}" data-level="classic">Classique</button>
-        <button class="difficulty-btn ${quizDifficulty==="hard"?"active":""}" data-level="hard">Difficile</button>
-      </div>
-      <button class="btn primary" id="startExam">Démarrer l’examen</button>
-    </section>
-    <div class="notice">Objectif conseillé en mode difficile : atteindre régulièrement 85 % ou plus, puis travailler à voix haute les cas pratiques et questions d’oral.</div>`;
-  document.querySelectorAll(".difficulty-btn").forEach(b=>b.onclick=()=>{
-    setDifficulty(b.dataset.level);
-    renderExamStart();
-  });
-  $("#startExam").onclick=()=>startQuiz(shuffle(Q).slice(0,30),"Examen blanc","exam");
-}
 renderHome();
 
 if("serviceWorker" in navigator){

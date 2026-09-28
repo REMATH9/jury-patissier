@@ -1,12 +1,13 @@
-const CACHE='jury-patisserie-v7';
+const CACHE='jury-patisserie-v8';
 const ASSETS=[
   './',
   './index.html',
-  './style.css?v=7',
-  './app.js?v=7',
+  './style.css?v=8',
+  './app.js?v=8',
   './questions.js?v=6',
   './vocabulary.js?v=7',
-  './manifest.json?v=7',
+  './bases.js?v=8',
+  './manifest.json?v=8',
   './icon.svg',
   './icon-192.png',
   './icon-512.png'

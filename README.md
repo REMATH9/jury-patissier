@@ -100,3 +100,12 @@ Après publication :
 - filtres par catégorie : boulangerie, pâtisserie, viennoiserie, chocolat, matériel, hygiène, production
 - fiche détaillée optimisée smartphone
 - fonctionnement hors ligne
+
+
+## V8 – Bases de pâtisserie
+- nouvel onglet **Bases**
+- remplacement de l'ancien onglet **Examen** par **Bases**
+- **30 fiches** sur les pâtes, crèmes et biscuits de base
+- chaque fiche contient : composition, méthode, utilisations et point technique à retenir
+- recherche et filtres par catégorie
+- fonctionnement optimisé pour smartphone
