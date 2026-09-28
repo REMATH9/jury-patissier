@@ -109,3 +109,11 @@ Après publication :
 - chaque fiche contient : composition, méthode, utilisations et point technique à retenir
 - recherche et filtres par catégorie
 - fonctionnement optimisé pour smartphone
+
+
+## V9 – Fiches-recettes à mémoriser
+- l'onglet **Bases** devient une bibliothèque de recettes de référence
+- fiches séparées **Pâtes / Crèmes / Biscuits**
+- quantités + méthode + utilisation + particularité
+- chaque fiche affiche un **mémo chiffré** pour faciliter l'apprentissage par cœur
+- formules volontairement simples et cohérentes pour l'étude

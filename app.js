@@ -4,6 +4,7 @@ const app = $("#app");
 const Q = window.QUESTIONS || [];
 const VOCAB = window.VOCABULARY || [];
 const BASES = window.BASES || [];
+const RECIPES = window.RECIPES || [];
 const categories = [...new Set(Q.map(q=>q.category))];
 
 const defaultState = {
@@ -61,27 +62,28 @@ document.querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>nav(b.dataset.vie
 $("#themeBtn").onclick=()=>setTheme(state.theme==="dark"?"light":"dark");
 
 
+
 function renderBases(activeCategory="Toutes", query=""){
   const cats=["Toutes","Pâtes","Crèmes","Biscuits"];
   const qn=normalizeSearch(query);
-  const filtered=BASES
-    .filter(b=>activeCategory==="Toutes" || b.category===activeCategory)
-    .filter(b=>{
+  const filtered=RECIPES
+    .filter(r=>activeCategory==="Toutes" || r.category===activeCategory)
+    .filter(r=>{
       if(!qn) return true;
       return normalizeSearch(
-        b.name+" "+b.category+" "+b.composition+" "+b.method+" "+b.uses+" "+b.key
+        r.name+" "+r.category+" "+r.formula+" "+r.memory+" "+r.particularity+" "+r.uses
       ).includes(qn);
     });
 
   app.innerHTML=`
-    <section class="bases-hero">
-      <div class="eyebrow">FONDAMENTAUX DE PÂTISSERIE</div>
-      <h2>Pâtes, crèmes & biscuits de base</h2>
-      <p class="muted">${BASES.length} bases à connaître. Composition, méthode, utilisations et point technique essentiel.</p>
+    <section class="bases-hero recipe-hero">
+      <div class="eyebrow">À APPRENDRE PAR CŒUR</div>
+      <h2>Pâtes, crèmes & biscuits</h2>
+      <p class="muted">Des fiches-recettes volontairement simples : quantités, méthode et particularité à retenir.</p>
       <div class="vocab-search-wrap">
         <span class="search-icon">⌕</span>
         <input id="basesSearch" class="vocab-search" type="search"
-          placeholder="Rechercher : choux, anglaise, génoise…"
+          placeholder="Rechercher : brisée, génoise, pâtissière…"
           value="${query.replace(/"/g,'&quot;')}" autocomplete="off">
       </div>
     </section>
@@ -90,21 +92,22 @@ function renderBases(activeCategory="Toutes", query=""){
       ${cats.map(c=>`<button class="vocab-chip ${c===activeCategory?"active":""}" data-cat="${encodeURIComponent(c)}">${c}</button>`).join("")}
     </div>
 
-    <div class="vocab-count">${filtered.length} base${filtered.length!==1?"s":""}</div>
+    <div class="vocab-count">${filtered.length} fiche${filtered.length!==1?"s":""}</div>
 
-    <div class="bases-list">
-      ${filtered.length ? filtered.map((b,i)=>`
-        <button class="base-item" data-index="${BASES.indexOf(b)}">
-          <div>
+    <div class="recipe-list">
+      ${filtered.length ? filtered.map((r,i)=>`
+        <button class="recipe-item" data-index="${RECIPES.indexOf(r)}">
+          <div class="recipe-item-main">
             <div class="base-item-top">
-              <strong>${b.name}</strong>
-              <span class="vocab-cat">${b.category}</span>
+              <strong>${r.name}</strong>
+              <span class="vocab-cat">${r.category}</span>
             </div>
-            <p>${b.composition}</p>
+            <div class="recipe-hook">${r.memory_hook}</div>
+            <p>${r.formula}</p>
           </div>
           <span class="vocab-arrow">›</span>
         </button>
-      `).join("") : `<div class="empty"><h2>Aucune base trouvée</h2><p>Essaie avec un autre terme.</p></div>`}
+      `).join("") : `<div class="empty"><h2>Aucune fiche trouvée</h2><p>Essaie avec un autre terme.</p></div>`}
     </div>
   `;
 
@@ -120,59 +123,76 @@ function renderBases(activeCategory="Toutes", query=""){
     renderBases(decodeURIComponent(b.dataset.cat), query);
   });
 
-  document.querySelectorAll(".base-item").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".recipe-item").forEach(b=>b.onclick=()=>{
     openBase(+b.dataset.index, activeCategory, query);
   });
 }
 
 function openBase(index, activeCategory="Toutes", query=""){
-  const b=BASES[index];
-  if(!b) return renderBases(activeCategory,query);
+  const r=RECIPES[index];
+  if(!r) return renderBases(activeCategory,query);
 
   app.innerHTML=`
     <div class="vocab-detail-top">
       <button class="back-link" id="backBases">‹ Bases</button>
-      <span class="vocab-cat detail-cat">${b.category}</span>
+      <span class="vocab-cat detail-cat">${r.category}</span>
     </div>
 
-    <article class="base-detail-card">
-      <div class="base-detail-kicker">${b.category.toUpperCase()}</div>
-      <h2 class="base-detail-title">${b.name}</h2>
+    <article class="recipe-card">
+      <div class="base-detail-kicker">${r.category.toUpperCase()}</div>
+      <h2 class="base-detail-title">${r.name}</h2>
 
-      <div class="base-block">
-        <div class="base-label">COMPOSITION</div>
-        <div>${b.composition}</div>
+      <div class="recipe-memory-banner">
+        <span>À MÉMORISER</span>
+        <strong>${r.memory_hook}</strong>
+        <small>${r.memory}</small>
       </div>
 
-      <div class="base-block">
+      <div class="recipe-section">
+        <div class="base-label">INGRÉDIENTS</div>
+        <div class="ingredient-list">
+          ${r.ingredients.map(([n,q])=>`
+            <div class="ingredient-row">
+              <span>${n}</span><strong>${q}</strong>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="recipe-section">
         <div class="base-label">MÉTHODE</div>
-        <div>${b.method}</div>
+        <div class="recipe-text">${r.method}</div>
       </div>
 
-      <div class="base-block">
-        <div class="base-label">UTILISATIONS</div>
-        <div>${b.uses}</div>
+      <div class="recipe-section">
+        <div class="base-label">UTILISATION</div>
+        <div class="recipe-text">${r.uses}</div>
       </div>
 
-      <div class="base-key">
-        <span>À RETENIR</span>
-        <strong>${b.key}</strong>
+      <div class="recipe-key">
+        <span>PARTICULARITÉ À RETENIR</span>
+        <strong>${r.particularity}</strong>
       </div>
+
+      <button class="reveal-btn" id="hideRecipe">
+        ↻ Revenir à la liste
+      </button>
     </article>
 
     <div class="vocab-nearby">
-      <div class="eyebrow">AUTRES BASES DE LA CATÉGORIE</div>
+      <div class="eyebrow">POUR CONTINUER</div>
       <div class="vocab-nearby-grid">
-        ${BASES
-          .filter(x=>x.category===b.category && x.name!==b.name)
+        ${RECIPES
+          .filter(x=>x.category===r.category && x.name!==r.name)
           .slice(0,8)
-          .map(x=>`<button class="vocab-nearby-btn" data-index="${BASES.indexOf(x)}">${x.name}</button>`)
+          .map(x=>`<button class="vocab-nearby-btn" data-index="${RECIPES.indexOf(x)}">${x.name}</button>`)
           .join("")}
       </div>
     </div>
   `;
 
   $("#backBases").onclick=()=>renderBases(activeCategory,query);
+  $("#hideRecipe").onclick=()=>renderBases(activeCategory,query);
   document.querySelectorAll(".vocab-nearby-btn").forEach(btn=>btn.onclick=()=>{
     openBase(+btn.dataset.index,activeCategory,query);
   });
@@ -186,7 +206,7 @@ function renderHome(){
         <div>
           <div class="eyebrow">OBJECTIF · JURY CENTRAL</div>
           <h2>Maîtriser les notions, pas les réciter.</h2>
-          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V8</span></p>
+          <p class="muted">${Q.length} questions couvrant les matières premières, la technique, l’hygiène, les coûts, le matériel et la législation. <span class="version-badge">V9</span></p>
           <div class="actions">
             <button class="btn primary" id="quick">Continuer la révision</button>
             <button class="btn ghost" id="weak">Mes erreurs (${s.wrong})</button>
